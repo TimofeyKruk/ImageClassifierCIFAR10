@@ -36,7 +36,7 @@ class MyNet(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         # TODO: Why is there no Softmax?
-        x = F.softmax(self.fc3(x))
+        x = self.fc3(x)
 
         return x
 
@@ -66,11 +66,13 @@ def train_model(train,PATH, epochs=10,save=True):
 
             running_loss+=loss.item()
 
-        print("epoch: ",epoch,", loss: ",running_loss)
+            if i%200==0:
+                print("epoch: ", epoch, ", batch: ",i,", loss: ", running_loss/200)
+                running_loss=0.0
+
 
     if save is True:
         torch.save(model.state_dict(),PATH)
-
 
     return model
 
