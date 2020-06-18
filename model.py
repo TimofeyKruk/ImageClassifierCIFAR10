@@ -41,10 +41,10 @@ class MyNet(nn.Module):
         return x
 
 
-def train_model(trainX, trainY,PATH, epochs=10,save=True):
+def train_model(train,PATH, epochs=10,save=True):
     # Optimizer, model, criterion initialization
-    classes_number = len(trainX.dataset.classes)
-    channels_number = trainX.dataset.data.shape[3]
+    classes_number = len(train.dataset.classes)
+    channels_number = train.dataset.data.shape[3]
     model = MyNet(classes_number=classes_number, in_channels=channels_number)
 
     criterion = nn.CrossEntropyLoss()
@@ -53,7 +53,7 @@ def train_model(trainX, trainY,PATH, epochs=10,save=True):
     for epoch in range(epochs):
         running_loss = 0.0
 
-        for i, data in enumerate(trainX):
+        for i, data in enumerate(train):
             inputs, labels = data
 
             # Don't forget to make gradients zeros
