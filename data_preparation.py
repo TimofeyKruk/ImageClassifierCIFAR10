@@ -1,6 +1,5 @@
 import torchvision
-import torch
-import torch.utils.data.dataloader as dataloader
+from torch.utils.data import dataloader
 import torchvision.transforms as transforms
 
 """""
@@ -16,9 +15,10 @@ def downloadData(download=False):
     :return: train,test <- datasets for feature loading
     """
 
+    #Adding transform (as i get it is a pipeline analogy)
     transform = transforms.Compose([
         transforms.ToTensor(),
-        # Something new for me. First is means for each channel
+        # Something new for me. First parameter is means for each channel
         # TODO: why did I decide that there is 3 channels, better parameterize
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
     ])
@@ -56,6 +56,6 @@ def loadData(train, test):
 if __name__ == "__main__":
     train, test = downloadData(download=False)
     train_l, test_l = loadData(train, test)
-    classes_names=train_l.dataset.classes
+    classes_names = train_l.dataset.classes
 
     print(classes_names)

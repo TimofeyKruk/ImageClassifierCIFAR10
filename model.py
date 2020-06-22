@@ -41,7 +41,7 @@ class MyNet(nn.Module):
         return x
 
 
-def train_model(train,PATH, epochs=10,save=True):
+def train_model(train, PATH, epochs=10, save=True):
     # Optimizer, model, criterion initialization
     classes_number = len(train.dataset.classes)
     channels_number = train.dataset.data.shape[3]
@@ -64,15 +64,14 @@ def train_model(train,PATH, epochs=10,save=True):
             loss.backward()
             optimizer.step()
 
-            running_loss+=loss.item()
+            running_loss += loss.item()
 
-            if i%200==0:
-                print("epoch: ", epoch, ", batch: ",i,", loss: ", running_loss/200)
-                running_loss=0.0
-
+            if i % 200 == 0:
+                print("epoch: ", epoch, ", batch: ", i, ", loss: ", running_loss / 200)
+                running_loss = 0.0
 
     if save is True:
-        torch.save(model.state_dict(),PATH)
+        torch.save(model.state_dict(), PATH)
 
     return model
 
