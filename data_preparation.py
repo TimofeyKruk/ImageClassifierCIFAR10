@@ -15,7 +15,7 @@ def downloadData(download=False):
     :return: train,test <- datasets for feature loading
     """
 
-    #Adding transform (as i get it is a pipeline analogy)
+    # Adding transform (as i get it is a pipeline analogy)
     transform = transforms.Compose([
         transforms.ToTensor(),
         # Something new for me. First parameter is means for each channel

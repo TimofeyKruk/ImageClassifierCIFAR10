@@ -76,6 +76,12 @@ def train_model(train, PATH, epochs=10, save=True):
     return model
 
 
+def load_model(PATH, classes_number=10, channels_number=3):
+    trained_model = MyNet(classes_number=classes_number, in_channels=channels_number)
+    trained_model.load_state_dict(torch.load(PATH))
+    return trained_model
+
+
 if __name__ == '__main__':
     net = MyNet(classes_number=10, in_channels=3)
     print(net)

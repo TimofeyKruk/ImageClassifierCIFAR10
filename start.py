@@ -2,6 +2,7 @@ import data_preparation
 import model
 import torch
 import argparse
+import numpy as np
 
 """Main module that loads data, trains and validates the model.
  If I don't forget, also would like to save model parameters for 
@@ -30,29 +31,31 @@ if __name__ == "__main__":
     else:
         # Loading previously trained model
         print("Loading model")
-
-        classes_number = len(train_l.dataset.classes)
-        channels_number = train_l.dataset.data.shape[3]
-
-        trained_model = model.MyNet(classes_number=classes_number, in_channels=channels_number)
-        trained_model.load_state_dict(torch.load(PATH))
+        trained_model=model.load_model(PATH)
         print(trained_model)
 
     # Make prediction on test data and saving them for future analysis in jupyter notebook
     correctly_classified = 0
     total = 0
 
+    all_labels = []
+    all_predictions = []
+
     with torch.no_grad():
         for batch in test_l:
             images, labels = batch
 
+            predictions = trained_model(images)
+            _, argmax_predictions = torch.max(predictions.data, 1)
+
+            correctly_classified += (argmax_predictions == labels).sum().item()
             total += labels.size(0)
 
-            predictions = trained_model(images)
-            _, max_predictions = torch.max(predictions.data, 1)
-            print(max_predictions)
-            print("______________________________")
-            correctly_classified += (max_predictions == labels).sum().item()
+            all_labels = np.append(all_labels, labels.numpy())
+            all_predictions = np.append(all_predictions, argmax_predictions.numpy())
+
+    np.savetxt("LabelsTest1.csv", all_labels, delimiter=',')
+    np.savetxt("PredictionsTest1.csv", all_predictions, delimiter=',')
 
     accuracy = correctly_classified / total * 100
-    print("The accuracy of a model is: ", accuracy)
+    print("The model accuracy is: ", accuracy)
