@@ -9,7 +9,7 @@ import argparse
 
 # Add command variable whether to learn or load model
 if __name__ == "__main__":
-    PATH="./SavedModel"
+    PATH = "./SavedModel"
 
     # Command variables parser
     parser = argparse.ArgumentParser()
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     if train_bool is True:
         # TRAINING
         print("Training model")
-        trained_model = model.train_model(train_l,PATH, epochs=4, save=True)
+        trained_model = model.train_model(train_l, PATH, epochs=4, save=True)
     else:
         # Loading previously trained model
         print("Loading model")
@@ -39,3 +39,20 @@ if __name__ == "__main__":
         print(trained_model)
 
     # Make prediction on test data and saving them for future analysis in jupyter notebook
+    correctly_classified = 0
+    total = 0
+
+    with torch.no_grad():
+        for batch in test_l:
+            images, labels = batch
+
+            total += labels.size(0)
+
+            predictions = trained_model(images)
+            _, max_predictions = torch.max(predictions.data, 1)
+            print(max_predictions)
+            print("______________________________")
+            correctly_classified += (max_predictions == labels).sum().item()
+
+    accuracy = correctly_classified / total * 100
+    print("The accuracy of a model is: ", accuracy)
