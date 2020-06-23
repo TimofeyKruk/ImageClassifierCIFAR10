@@ -14,17 +14,17 @@ class MyNet(nn.Module):
 
         # Initializing learning layers
         self.conv1 = nn.Conv2d(in_channels, 8, 3, stride=1)
-        self.pool1 = nn.AvgPool2d(2, stride=2)
+        self.pool1 = nn.MaxPool2d(2, stride=2)
         self.conv2 = nn.Conv2d(8, 16, 4)
         self.conv3 = nn.Conv2d(16, 32, 3)
         # self.conv4 = nn.Conv2d(24, 32, 3)
         # self.conv5 = nn.Conv2d(32, 40, 3)
-        self.pool2 = nn.AvgPool2d(2, stride=2)
+        self.pool2 = nn.MaxPool2d(2, stride=2)
 
         # Here will be Flatten layer (tensor.view) later while building structure of model(forward())
-        self.fc1 = nn.Linear(32 * 5 * 5, 128)
-        self.fc2 = nn.Linear(128, 16)
-        self.fc3 = nn.Linear(16, classes_number)
+        self.fc1 = nn.Linear(32 * 5 * 5, 256)
+        self.fc2 = nn.Linear(256, 32)
+        self.fc3 = nn.Linear(32, classes_number)
 
     def forward(self, x):
         x = F.relu(self.conv1(x))
@@ -51,7 +51,7 @@ def train_model(train, PATH, cuda=False, epochs=10, save=True):
 
     criterion = nn.CrossEntropyLoss()
 
-    optimizer = torch.optim.Adam(myNet.parameters(), lr=0.01)
+    optimizer = torch.optim.Adam(myNet.parameters(), lr=0.005)
 
     device = None
     if cuda is True:

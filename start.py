@@ -31,7 +31,7 @@ if __name__ == "__main__":
     if train_bool is True:
         # TRAINING
         print("Training model")
-        trained_model = model.train_model(train_l, PATH, cuda=True, epochs=3, save=True)
+        trained_model = model.train_model(train_l, PATH, cuda=True, epochs=7, save=True)
         print("Model has been trained!")
         print(trained_model)
     else:
@@ -40,8 +40,7 @@ if __name__ == "__main__":
         trained_model = model.load_model(PATH)
         print(trained_model)
 
-    # TODO: can be a bug, better to change
-    trained_model.to("cpu")
+
     # Make prediction on test data and saving them for future analysis in jupyter notebook
     correctly_classified = 0
     total = 0
@@ -62,8 +61,8 @@ if __name__ == "__main__":
             all_labels = np.append(all_labels, labels.numpy())
             all_predictions = np.append(all_predictions, argmax_predictions.numpy())
 
-    np.savetxt("LabelsTest1.csv", all_labels, delimiter=',')
-    np.savetxt("PredictionsTest1.csv", all_predictions, delimiter=',')
+    np.savetxt("LabelsTest2.csv", all_labels, delimiter=',')
+    np.savetxt("PredictionsTest2.csv", all_predictions, delimiter=',')
 
     accuracy = correctly_classified / total * 100
     print("The model accuracy is: ", accuracy)
