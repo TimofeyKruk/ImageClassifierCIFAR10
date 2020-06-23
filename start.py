@@ -29,6 +29,7 @@ if __name__ == "__main__":
         print("Training model")
         trained_model = model.train_model(train_l, PATH, cuda=True, epochs=5, save=True)
         print("Model has been trained!")
+        print(trained_model)
     else:
         # Loading previously trained model
         print("Loading model")

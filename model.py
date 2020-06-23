@@ -13,35 +13,35 @@ class MyNet(nn.Module):
         super(MyNet, self).__init__()
 
         # Initializing learning layers
-        self.conv1 = nn.Conv2d(in_channels, 8, 7, stride=1)
+        self.conv1 = nn.Conv2d(in_channels, 8, 5, stride=1)
+        self.pool1 = nn.AvgPool2d(2, stride=2)
         self.conv2 = nn.Conv2d(8, 16, 5)
-        self.conv3 = nn.Conv2d(16, 24, 3)
-        self.conv4 = nn.Conv2d(24, 32, 3)
-        self.conv5 = nn.Conv2d(32, 40, 3)
-        self.pool5 = nn.MaxPool2d(2, stride=2)
+        self.conv3 = nn.Conv2d(16, 32, 3)
+        # self.conv4 = nn.Conv2d(24, 32, 3)
+        # self.conv5 = nn.Conv2d(32, 40, 3)
+        self.pool2 = nn.MaxPool2d(2, stride=2)
 
         # Here will be Flatten layer (tensor.view) later while building structure of model(forward())
-        self.fc1 = nn.Linear(40 * 8* 8, 256)
-        self.fc2 = nn.Linear(256, 64)
-        self.fc3 = nn.Linear(64, 16)
+        self.fc1 = nn.Linear(32 * 4 * 4, 128)
+        self.fc2 = nn.Linear(128, 32)
+        self.fc3 = nn.Linear(32, 16)
         self.fc4 = nn.Linear(16, classes_number)
 
     def forward(self, x):
-        x = F.relu(self.con1(x))
+        x = F.relu(self.conv1(x))
+        x = self.pool1(x)
         x = F.relu(self.conv2(x))
         x = F.relu(self.conv3(x))
-        x = F.relu(self.conv4(x))
-        x = F.relu(self.conv5(x))
-        x = self.pool5(x)
+        x = self.pool2(x)
 
         # Analogy to Flatten()
-        x = x.view(-1, 24 * 5 * 5)
+        x = x.view(-1, 32 * 4 * 4)
 
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = F.relu(self.fc3(x))
-        # TODO: Why is there no Softmax?
+        x = F.tanh(self.fc1(x))
+        x = F.tanh(self.fc2(x))
+        x = F.tanh(self.fc3(x))
         x = self.fc4(x)
+
         return x
 
 
@@ -60,7 +60,6 @@ def train_model(train, PATH, cuda=False, epochs=10, save=True):
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         print("Device: ", device)
         myNet.to(device)
-
 
     for epoch in range(epochs):
         running_loss = 0.0
