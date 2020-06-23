@@ -13,19 +13,18 @@ class MyNet(nn.Module):
         super(MyNet, self).__init__()
 
         # Initializing learning layers
-        self.conv1 = nn.Conv2d(in_channels, 8, 5, stride=1)
+        self.conv1 = nn.Conv2d(in_channels, 8, 3, stride=1)
         self.pool1 = nn.AvgPool2d(2, stride=2)
-        self.conv2 = nn.Conv2d(8, 16, 5)
+        self.conv2 = nn.Conv2d(8, 16, 4)
         self.conv3 = nn.Conv2d(16, 32, 3)
         # self.conv4 = nn.Conv2d(24, 32, 3)
         # self.conv5 = nn.Conv2d(32, 40, 3)
-        self.pool2 = nn.MaxPool2d(2, stride=2)
+        self.pool2 = nn.AvgPool2d(2, stride=2)
 
         # Here will be Flatten layer (tensor.view) later while building structure of model(forward())
-        self.fc1 = nn.Linear(32 * 4 * 4, 128)
-        self.fc2 = nn.Linear(128, 32)
-        self.fc3 = nn.Linear(32, 16)
-        self.fc4 = nn.Linear(16, classes_number)
+        self.fc1 = nn.Linear(32 * 5 * 5, 128)
+        self.fc2 = nn.Linear(128, 16)
+        self.fc3 = nn.Linear(16, classes_number)
 
     def forward(self, x):
         x = F.relu(self.conv1(x))
@@ -35,12 +34,11 @@ class MyNet(nn.Module):
         x = self.pool2(x)
 
         # Analogy to Flatten()
-        x = x.view(-1, 32 * 4 * 4)
+        x = x.view(-1, 32 * 5 * 5)
 
-        x = F.tanh(self.fc1(x))
-        x = F.tanh(self.fc2(x))
-        x = F.tanh(self.fc3(x))
-        x = self.fc4(x)
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
 
         return x
 
@@ -53,7 +51,7 @@ def train_model(train, PATH, cuda=False, epochs=10, save=True):
 
     criterion = nn.CrossEntropyLoss()
 
-    optimizer = torch.optim.Adam(myNet.parameters(), lr=0.005)
+    optimizer = torch.optim.Adam(myNet.parameters(), lr=0.01)
 
     device = None
     if cuda is True:
@@ -87,6 +85,7 @@ def train_model(train, PATH, cuda=False, epochs=10, save=True):
 
     if save is True:
         torch.save(myNet.state_dict(), PATH)
+        print("Model was successfully saved!")
 
     return myNet
 

@@ -14,20 +14,24 @@ if __name__ == "__main__":
 
     # Command variables parser
     parser = argparse.ArgumentParser()
+    parser.add_argument("--path", help="path to save/load model weights",
+                        default=PATH)
     parser.add_argument("--train", help="boolean value whether train or load the model",
                         default=False)
+
     args = parser.parse_args()
+    PATH = args.path
+    train_bool = bool(args.train)
 
     train, test = data_preparation.downloadData(download=False)
     train_l, test_l = data_preparation.loadData(train, test)
 
-    train_bool = bool(args.train)
     trained_model = None
 
     if train_bool is True:
         # TRAINING
         print("Training model")
-        trained_model = model.train_model(train_l, PATH, cuda=True, epochs=5, save=True)
+        trained_model = model.train_model(train_l, PATH, cuda=True, epochs=3, save=True)
         print("Model has been trained!")
         print(trained_model)
     else:
@@ -36,6 +40,8 @@ if __name__ == "__main__":
         trained_model = model.load_model(PATH)
         print(trained_model)
 
+    # TODO: can be a bug, better to change
+    trained_model.to("cpu")
     # Make prediction on test data and saving them for future analysis in jupyter notebook
     correctly_classified = 0
     total = 0
@@ -61,5 +67,3 @@ if __name__ == "__main__":
 
     accuracy = correctly_classified / total * 100
     print("The model accuracy is: ", accuracy)
-
-    print(torch.cuda.is_available())
