@@ -34,7 +34,8 @@ if __name__ == "__main__":
     if train_bool is True:
         # TRAINING
         print("Training model")
-        trained_model = model.train_model(train_l, PATH, cuda=True, epochs=10, save=True)
+        print("Path to save: ",PATH)
+        trained_model = model.train_model(train_l, PATH, cuda=True, epochs=12, save=True)
         print("Model has been trained!")
         print(trained_model)
     else:

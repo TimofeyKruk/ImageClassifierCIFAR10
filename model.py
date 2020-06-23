@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.tensorboard import SummaryWriter
+
 """
 Will write some information about structure later.
 """
@@ -24,7 +25,6 @@ class MyNet(nn.Module):
         self.conv5 = nn.Conv2d(40, 48, 3)
         self.conv6 = nn.Conv2d(48, 56, 3)
         self.conv7 = nn.Conv2d(56, 64, 3)
-
 
         # self.pool2 = nn.MaxPool2d(2, stride=2)
 
@@ -74,7 +74,11 @@ def train_model(train, PATH, cuda=False, epochs=10, save=True):
 
     criterion = nn.CrossEntropyLoss()
 
-    optimizer = torch.optim.SGD(myNet.parameters(), lr=0.005,weight_decay=1)
+    optimizer = torch.optim.SGD(myNet.parameters(), lr=0.01, weight_decay=0)
+
+    # NEW: Trying to wrap optimizer with sheduler (for lr decay)
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer,
+                                                     milestones=[3, 8], gamma=0.1)
 
     device = None
     if cuda is True:
@@ -105,6 +109,8 @@ def train_model(train, PATH, cuda=False, epochs=10, save=True):
             if i % 200 == 0:
                 print("epoch: ", epoch, ", batch: ", i, ", loss: ", running_loss / 200)
                 running_loss = 0.0
+
+        scheduler.step()
 
     if save is True:
         torch.save(myNet.state_dict(), PATH)
