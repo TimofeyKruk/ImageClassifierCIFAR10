@@ -13,32 +13,44 @@ class MyNet(nn.Module):
         super(MyNet, self).__init__()
 
         # Initializing learning layers
-        self.conv1 = nn.Conv2d(in_channels, 8, 3, stride=1)
+        self.conv1 = nn.Conv2d(in_channels, 12, 3, stride=1)
+        self.bn1 = nn.BatchNorm2d(12, affine=False)
+
+        self.conv2 = nn.Conv2d(12, 16, 3)
+        self.conv3 = nn.Conv2d(16, 24, 3)
         self.pool1 = nn.MaxPool2d(2, stride=2)
-        self.conv2 = nn.Conv2d(8, 16, 4)
-        self.conv3 = nn.Conv2d(16, 32, 3)
-        # self.conv4 = nn.Conv2d(24, 32, 3)
-        # self.conv5 = nn.Conv2d(32, 40, 3)
-        self.pool2 = nn.MaxPool2d(2, stride=2)
+        self.conv4 = nn.Conv2d(24, 32, 3)
+        self.conv5 = nn.Conv2d(32, 40, 3)
+        self.conv6 = nn.Conv2d(40, 48, 3)
+
+        # self.pool2 = nn.MaxPool2d(2, stride=2)
 
         # Here will be Flatten layer (tensor.view) later while building structure of model(forward())
-        self.fc1 = nn.Linear(32 * 5 * 5, 256)
-        self.fc2 = nn.Linear(256, 32)
-        self.fc3 = nn.Linear(32, classes_number)
+        self.fc1 = nn.Linear(48 * 7 * 7, 256)
+        self.bn2 = nn.BatchNorm1d(256, affine=False)
+        self.fc2 = nn.Linear(256, 64)
+        self.fc3 = nn.Linear(64, 16)
+        self.fc4 = nn.Linear(16, classes_number)
 
     def forward(self, x):
-        x = F.relu(self.conv1(x))
-        x = self.pool1(x)
+        x = self.bn1(self.conv1(x))
+        x = F.relu(x)
+
         x = F.relu(self.conv2(x))
         x = F.relu(self.conv3(x))
-        x = self.pool2(x)
+        x = self.pool1(x)
+
+        x = F.relu(self.conv4(x))
+        x = F.relu(self.conv5(x))
+        x = F.relu(self.conv6(x))
 
         # Analogy to Flatten()
-        x = x.view(-1, 32 * 5 * 5)
+        x = x.view(-1, 48 * 7 * 7)
 
-        x = F.relu(self.fc1(x))
+        x = F.relu(self.bn2(self.fc1(x)))
         x = F.relu(self.fc2(x))
-        x = self.fc3(x)
+        x=F.relu(self.fc3(x))
+        x = self.fc4(x)
 
         return x
 
