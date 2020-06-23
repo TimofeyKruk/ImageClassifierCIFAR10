@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
+from torch.utils.tensorboard import SummaryWriter
 """
 Will write some information about structure later.
 """
@@ -13,44 +13,55 @@ class MyNet(nn.Module):
         super(MyNet, self).__init__()
 
         # Initializing learning layers
-        self.conv1 = nn.Conv2d(in_channels, 12, 3, stride=1)
-        self.bn1 = nn.BatchNorm2d(12, affine=False)
+        self.conv1 = nn.Conv2d(in_channels, 16, 3, stride=1)
+        self.bn_conv1 = nn.BatchNorm2d(16, affine=False)
 
-        self.conv2 = nn.Conv2d(12, 16, 3)
-        self.conv3 = nn.Conv2d(16, 24, 3)
+        self.conv2 = nn.Conv2d(16, 24, 3)
+        self.conv3 = nn.Conv2d(24, 32, 3)
         self.pool1 = nn.MaxPool2d(2, stride=2)
-        self.conv4 = nn.Conv2d(24, 32, 3)
-        self.conv5 = nn.Conv2d(32, 40, 3)
-        self.conv6 = nn.Conv2d(40, 48, 3)
+        self.conv4 = nn.Conv2d(32, 40, 3)
+        self.bn_conv4 = nn.BatchNorm2d(40, affine=True)
+        self.conv5 = nn.Conv2d(40, 48, 3)
+        self.conv6 = nn.Conv2d(48, 56, 3)
+        self.conv7 = nn.Conv2d(56, 64, 3)
+
 
         # self.pool2 = nn.MaxPool2d(2, stride=2)
 
         # Here will be Flatten layer (tensor.view) later while building structure of model(forward())
-        self.fc1 = nn.Linear(48 * 7 * 7, 256)
-        self.bn2 = nn.BatchNorm1d(256, affine=False)
+        self.fc1 = nn.Linear(64 * 5 * 5, 256)
+        self.bn_fc1 = nn.BatchNorm1d(256, affine=False)
+        self.dropout1 = nn.Dropout(p=0.3)
         self.fc2 = nn.Linear(256, 64)
-        self.fc3 = nn.Linear(64, 16)
-        self.fc4 = nn.Linear(16, classes_number)
+        self.fc3 = nn.Linear(64, 32)
+        self.dropout3 = nn.Dropout(p=0.2)
+        self.fc4 = nn.Linear(32, 16)
+        self.fc5 = nn.Linear(16, classes_number)
 
     def forward(self, x):
-        x = self.bn1(self.conv1(x))
+        x = self.bn_conv1(self.conv1(x))
         x = F.relu(x)
 
         x = F.relu(self.conv2(x))
         x = F.relu(self.conv3(x))
         x = self.pool1(x)
 
-        x = F.relu(self.conv4(x))
+        x = F.relu(self.bn_conv4(self.conv4(x)))
         x = F.relu(self.conv5(x))
         x = F.relu(self.conv6(x))
+        x = F.relu(self.conv7(x))
 
         # Analogy to Flatten()
-        x = x.view(-1, 48 * 7 * 7)
+        x = x.view(-1, 64 * 5 * 5)
 
-        x = F.relu(self.bn2(self.fc1(x)))
+        x = F.relu(self.bn_fc1(self.fc1(x)))
+        x = self.dropout1(x)
+
         x = F.relu(self.fc2(x))
-        x=F.relu(self.fc3(x))
-        x = self.fc4(x)
+        x = F.relu(self.fc3(x))
+        x = self.dropout3(x)
+        x = F.relu(self.fc4(x))
+        x = self.fc5(x)
 
         return x
 
@@ -63,7 +74,7 @@ def train_model(train, PATH, cuda=False, epochs=10, save=True):
 
     criterion = nn.CrossEntropyLoss()
 
-    optimizer = torch.optim.Adam(myNet.parameters(), lr=0.005)
+    optimizer = torch.optim.SGD(myNet.parameters(), lr=0.005,weight_decay=1)
 
     device = None
     if cuda is True:

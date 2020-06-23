@@ -3,6 +3,7 @@ import model
 import torch
 import argparse
 import numpy as np
+from torch.utils.tensorboard import SummaryWriter
 
 """Main module that loads data, trains and validates the model.
  If I don't forget, also would like to save model parameters for 
@@ -28,10 +29,12 @@ if __name__ == "__main__":
 
     trained_model = None
 
+    writer = SummaryWriter("runs/cifar10_SGDregul_7conv&bn_5fc&bn&dropout_1")
+
     if train_bool is True:
         # TRAINING
         print("Training model")
-        trained_model = model.train_model(train_l, PATH, cuda=True, epochs=7, save=True)
+        trained_model = model.train_model(train_l, PATH, cuda=True, epochs=10, save=True)
         print("Model has been trained!")
         print(trained_model)
     else:
@@ -60,6 +63,9 @@ if __name__ == "__main__":
 
             all_labels = np.append(all_labels, labels.numpy())
             all_predictions = np.append(all_predictions, argmax_predictions.numpy())
+
+    writer.add_graph(trained_model, images)
+    print("Model graph was added to tensorboard!")
 
     np.savetxt("LabelsTest2.csv", all_labels, delimiter=',')
     np.savetxt("PredictionsTest2.csv", all_predictions, delimiter=',')
