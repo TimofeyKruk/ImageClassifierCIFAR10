@@ -45,26 +45,36 @@ class MyNet(nn.Module):
         return x
 
 
-def train_model(train, PATH, epochs=10, save=True):
+def train_model(train, PATH, cuda=False, epochs=10, save=True):
     # Optimizer, model, criterion initialization
     classes_number = len(train.dataset.classes)
     channels_number = train.dataset.data.shape[3]
-    model = MyNet(classes_number=classes_number, in_channels=channels_number)
+    myNet = MyNet(classes_number=classes_number, in_channels=channels_number)
 
     criterion = nn.CrossEntropyLoss()
-    print(criterion)
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.005)
+
+    optimizer = torch.optim.Adam(myNet.parameters(), lr=0.005)
+
+    device = None
+    if cuda is True:
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        print("Device: ", device)
+        myNet.to(device)
+
 
     for epoch in range(epochs):
         running_loss = 0.0
 
         for i, data in enumerate(train):
-            inputs, labels = data
+            if cuda is True:
+                inputs, labels = data[0].to(device), data[1].to(device)
+            else:
+                inputs, labels = data
 
             # Don't forget to make gradients zeros
             optimizer.zero_grad()
 
-            outputs = model(inputs)
+            outputs = myNet(inputs)
             loss = criterion(outputs, labels)
 
             loss.backward()
@@ -77,9 +87,9 @@ def train_model(train, PATH, epochs=10, save=True):
                 running_loss = 0.0
 
     if save is True:
-        torch.save(model.state_dict(), PATH)
+        torch.save(myNet.state_dict(), PATH)
 
-    return model
+    return myNet
 
 
 def load_model(PATH, classes_number=10, channels_number=3):

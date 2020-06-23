@@ -15,3 +15,5 @@ MyNet(
 )
 
 Accuracy on testing is 54%.
+Confusion matrix is in Jupyter Notebook
+
