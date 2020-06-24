@@ -118,7 +118,7 @@ def train_model(myNet, train, test, PATH, tensorboard, cuda=False, epochs=10, sa
                         predictions = myNet(images)
 
                         # Gathering test loss among mini-batches
-                        test_loss += criterion(predictions, labels).item
+                        test_loss += criterion(predictions, labels).item()
 
                         _, argmax_predictions = torch.max(predictions.data, 1)
 
@@ -128,11 +128,11 @@ def train_model(myNet, train, test, PATH, tensorboard, cuda=False, epochs=10, sa
                 test_loss /= len(test)
 
                 # loss
-                tensorboard.add_scalar("loss", {
+                tensorboard.add_scalars("loss", {
                     "training_loss": running_loss / 300,
                     "test_loss": test_loss
                 }, epoch * 11 + i // 300)
-                
+
                 tensorboard.add_scalar("test_accuracy", correctly_classified / total, epoch * 11 + i // 300)
 
                 print("epoch: ", epoch, ", batch: ", i, ", loss: ", running_loss / 300)
