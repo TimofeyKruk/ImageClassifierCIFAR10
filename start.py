@@ -12,16 +12,19 @@ from torch.utils.tensorboard import SummaryWriter
 # Add command variable whether to learn or load model
 if __name__ == "__main__":
     PATH = "./SavedModel"
-
+    model_architecture="Custom"
     # Command variables parser
     parser = argparse.ArgumentParser()
     parser.add_argument("--path", help="path to save/load model weights",
                         default=PATH)
     parser.add_argument("--train", help="boolean value whether train or load the model",
                         default=False)
+    parser.add_argument("--model", help="for using custom structure enter \"Custom\"",
+                        default=model_architecture)
 
     args = parser.parse_args()
     PATH = args.path
+    model_architecture = args.model
     train_bool = bool(args.train)
 
     train, test = data_preparation.downloadData(download=False)
@@ -29,13 +32,18 @@ if __name__ == "__main__":
 
     trained_model = None
 
-    writer = SummaryWriter("runs/cifar10_SGDregul_7conv&bn_5fc&bn&dropout_1")
+    writer = SummaryWriter("runs/cifar10_SGDregul_8conv&bn_5fc&bn&dropout_2406_2")
 
     if train_bool is True:
         # TRAINING
         print("Training model")
-        print("Path to save: ",PATH)
-        trained_model = model.train_model(train_l, PATH, cuda=True, epochs=12, save=True)
+        print("Path to save: ", PATH)
+
+        classes_number = len(train_l.dataset.classes)
+        channels_number = train_l.dataset.data.shape[3]
+        myNet = model.MyNet(classes_number=classes_number, in_channels=channels_number)
+
+        trained_model = model.train_model(myNet, train_l, test_l, PATH, writer, cuda=True, epochs=10, save=True)
         print("Model has been trained!")
         print(trained_model)
     else:
@@ -44,7 +52,6 @@ if __name__ == "__main__":
         trained_model = model.load_model(PATH)
         print(trained_model)
 
-
     # Make prediction on test data and saving them for future analysis in jupyter notebook
     correctly_classified = 0
     total = 0
@@ -52,6 +59,7 @@ if __name__ == "__main__":
     all_labels = []
     all_predictions = []
 
+    # Accuracy counting for test
     with torch.no_grad():
         for batch in test_l:
             images, labels = batch
@@ -67,6 +75,7 @@ if __name__ == "__main__":
 
     writer.add_graph(trained_model, images)
     print("Model graph was added to tensorboard!")
+    writer.close()
 
     np.savetxt("LabelsTest2.csv", all_labels, delimiter=',')
     np.savetxt("PredictionsTest2.csv", all_predictions, delimiter=',')
