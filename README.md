@@ -2,11 +2,11 @@
 **Written with PyTorch API**  
 
 Used CIFAR10 image (32,32,3) dataset for training and testing.
-During the investigation process different structures were trained.  
+During the investigation process trained different structures.  
 *The architectures of neural networks and results (accuracy) are listed below:*  
 
 ## 2 Convolutional + 3 Dense(FC) model
-The first attempt was with a simple model structure:
+The first attempt was with quite simple model structure:
 
 ```bash
 MyNet(
@@ -21,16 +21,16 @@ MyNet(
 ```
 
 **Accuracy** on testing data is **54%**.
-Confusion matrix is in Jupyter Notebook or below.
+A confusion matrix is in Jupyter Notebook or below.
 ![изображение](https://user-images.githubusercontent.com/43128663/85545429-9dc17280-b624-11ea-834c-256fa8f47f89.png)
 
 ## Deeper CNN with batch normalization and dropout
 Added more convolutional and fully connected layers.  
-+Batch Normalization and Dropout.  
+**+Batch Normalization and Dropout.  
 +Mini-batch gradient descent.  
-+SGD Optimizer with learning rate scheduler (custom LR decay analogy).  
++SGD Optimizer with learning rate scheduler (custom LR decay analogy).**  
   
-Tried different structures and hyperparameters (learning rate, epochs number, kernel sizes and etc.).  
+Tried different structures and hyperparameters *(learning rate, epochs number, kernel sizes and etc.)*.  
 The best results were achieved with the following structure:
 
 ```bash
@@ -59,7 +59,7 @@ MyNet(
 
 **Accuracy** on testing data is **69%**.
 Also used Tensorboard for training analysis.  
-An image below shows test accuracy of current (green: 69%) versus less deep NN (red: < 60%)
+An image below shows test accuracy of current **(green: 69%)** versus less deep NN **(red: < 60%)**  
 (x axis is for training process)
 
 ![изображение](https://user-images.githubusercontent.com/43128663/85561352-2dbae880-b634-11ea-89db-c9db96f82b2c.png)
@@ -79,14 +79,14 @@ Losses (test&train) while learning and test accuracy:
 
 #### Why is ResNet18 performance so unsatisfying?
 **My own assumptions:**  
--For a deep model 8 epochs can be not enough to grasp the data distribution.
--After 4th epoch (custom scheduler is responsible for this) learning rate decreases to 0.001.  
+* For a deep model 8 epochs can be not enough to grasp the data distribution.
+* After 4th epoch (custom scheduler is responsible for this) learning rate decreases to 0.001.  
 Due to this it will take longer to converge to the local/global(/just small enough) minimum of cost function.
--Data: 50 000 train images can be still not enough to learn the dependencies of data.
+* Data: 50 000 train images can be still not enough to learn the dependencies of data.
 
-##### Contacts
+#### Contacts
 **Created by Timofey Kruk**  
 kruktimofey@gmail.com  
-[Skype](live:kruktimofey_1)
+[Skype](https://join.skype.com/invite/o4jkACciB3Nh)
 
  
