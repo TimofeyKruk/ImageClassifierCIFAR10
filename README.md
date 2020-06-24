@@ -1,5 +1,6 @@
 # Convolutional NN for CIFAR10 image classification
-**Written with PyTorch API**
+**Written with PyTorch API**  
+
 Used CIFAR10 image (32,32,3) dataset for training and testing.
 During the investigation process different structures were trained.  
 *The architectures of neural networks and results (accuracy) are listed below:*  
@@ -58,8 +59,8 @@ MyNet(
 
 **Accuracy** on testing data is **69%**.
 Also used Tensorboard for training analysis.  
-Image below shows test accuracy of current (green: 69%) versus less deep NN (red: < 60%)
-(x axes is for training process)
+An image below shows test accuracy of current (green: 69%) versus less deep NN (red: < 60%)
+(x axis is for training process)
 
 ![изображение](https://user-images.githubusercontent.com/43128663/85561352-2dbae880-b634-11ea-89db-c9db96f82b2c.png)
 
@@ -68,7 +69,7 @@ Losses while training(orange-test, gray-train)
 ![изображение](https://user-images.githubusercontent.com/43128663/85562468-2e07b380-b635-11ea-8c42-51dc2db0d3c3.png)
 
 ## ResNet18
-A famous build-in architecture of a model that was trained from the beginning (not pretrained).  
+The famous build-in architecture of the model that was trained from the beginning (not pretrained).  
 **Accuracy** on testing data is **71%**.
 
 Losses (test&train) while learning and test accuracy:  
@@ -77,7 +78,7 @@ Losses (test&train) while learning and test accuracy:
 
 
 #### Why is ResNet18 performance so unsatisfying?
-My own assumptions:  
+**My own assumptions:**  
 -For a deep model 8 epochs can be not enough to grasp the data distribution.
 -After 4th epoch (custom scheduler is responsible for this) learning rate decreases to 0.001.  
 Due to this it will take longer to converge to the local/global(/just small enough) minimum of cost function.
