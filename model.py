@@ -77,7 +77,7 @@ def train_model(myNet, train, test, PATH, tensorboard, cuda=False, epochs=10, sa
 
     # NEW: Trying to wrap optimizer with sheduler (for lr decay)
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer,
-                                                     milestones=[5, 7, 9], gamma=0.1)
+                                                     milestones=[4, 7, 9], gamma=0.1)
 
     device = None
     if cuda is True:

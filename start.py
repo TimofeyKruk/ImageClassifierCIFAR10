@@ -1,6 +1,7 @@
 import data_preparation
 import model
 import torch
+import torchvision
 import argparse
 import numpy as np
 from torch.utils.tensorboard import SummaryWriter
@@ -12,7 +13,7 @@ from torch.utils.tensorboard import SummaryWriter
 # Add command variable whether to learn or load model
 if __name__ == "__main__":
     PATH = "./SavedModel"
-    model_architecture="Custom"
+    model_architecture = "Custom"
     # Command variables parser
     parser = argparse.ArgumentParser()
     parser.add_argument("--path", help="path to save/load model weights",
@@ -32,20 +33,29 @@ if __name__ == "__main__":
 
     trained_model = None
 
-    writer = SummaryWriter("runs/cifar10_SGDregul_8conv&bn_5fc&bn&dropout_2406_2")
+    writer = SummaryWriter("runs/cifar10_SGD_resNet18")
 
     if train_bool is True:
         # TRAINING
-        print("Training model")
+        print("Training model:", model_architecture)
         print("Path to save: ", PATH)
 
         classes_number = len(train_l.dataset.classes)
         channels_number = train_l.dataset.data.shape[3]
-        myNet = model.MyNet(classes_number=classes_number, in_channels=channels_number)
 
-        trained_model = model.train_model(myNet, train_l, test_l, PATH, writer, cuda=True, epochs=10, save=True)
-        print("Model has been trained!")
-        print(trained_model)
+        if model_architecture == "Custom":
+            myNet = model.MyNet(classes_number=classes_number, in_channels=channels_number)
+            trained_model = model.train_model(myNet, train_l, test_l, PATH, writer, cuda=True, epochs=10, save=True)
+            print("Model has been trained!")
+            print(trained_model)
+        else:
+            resNet=torchvision.models.resnet18()
+            resNet.fc=torch.nn.Linear(in_features=512, out_features=10)
+            print(resNet)
+
+            trained_model = model.train_model(resNet, train_l, test_l, PATH, writer, cuda=True, epochs=7, save=True)
+
+
     else:
         # Loading previously trained model
         print("Loading model")
